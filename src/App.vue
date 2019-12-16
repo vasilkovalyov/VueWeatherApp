@@ -1,28 +1,50 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app" class="wrapper">
+    <div class="weather-panel" style="background-image: url(images/rainy.jpg)">
+      <span class="logo">weather.com</span>
+      <WeatherCity></WeatherCity>
+      <WeatherDetails></WeatherDetails>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+import WeatherCity from "./components/WeatherCity";
+import WeatherDetails from "./components/WeatherDetails";
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    WeatherCity,
+    WeatherDetails
+  },
+  mounted () {
+    this.$store.dispatch("findMe");
+    this.$store.dispatch("timeLocation");
   }
 }
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+@import './assets/scss/style';
+
+.logo {
+  font-weight: 500;
+  font-size: 20px;
+  text-shadow: 0px 0px 12px rgba(0,0,0,0.22);
+  position: absolute;
+  top: 90px;
+  left: 180px;
 }
+
+.weather-panel {
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+}
+
 </style>
