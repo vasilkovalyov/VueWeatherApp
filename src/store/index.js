@@ -58,7 +58,6 @@ export default new Vuex.Store({
 			.then(data => {
 				console.log(data);
 				store.dispatch("weatherData", data);
-				store.dispatch("timeLocation");
 			})
 			.catch(error => error);
 		},
@@ -74,6 +73,7 @@ export default new Vuex.Store({
       	]),
       	store.commit('setIconWeather', data.weather[0].icon);
 		store.commit('setBgImageWeather', data.weather[0].description + '.jpg');
+		store.dispatch("timeLocation");
     },
 
     findMe(store) {
@@ -87,7 +87,7 @@ export default new Vuex.Store({
 			.then(data => {
 				store.commit('setCityName', data.name);
 				store.dispatch("weatherData", data);
-				store.dispatch("timeLocation");
+				
 			})
 			.catch(error => error); 
       	}
