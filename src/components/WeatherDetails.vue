@@ -1,6 +1,6 @@
 <template>
     <div class="weather-details" >
-        <div class="blur" style="background-image: url(images/rainy.jpg)"></div>
+        <div class="blur" :style="{ backgroundImage: 'url(images/' + getWeatherImage}"></div>
         <div class="content-holder">
             <SearchLocation></SearchLocation>
             <h6>Weather Details</h6>
@@ -16,16 +16,17 @@
 <script>
     import SearchLocation from './SearchLocation'
 
+    import { mapGetters } from "vuex";
+
     export default {
-        data() {
-            return {
-            }
-        },
         computed: {
-            getWeatherDetails() {
-                return this.$store.getters.getWeatherDetails
+             ...mapGetters(["getWeatherDetails", "getWeatherImage", "getWatherObj"]),
+
+            getImg() {
+                 return this.getWeatherImage;
             }
         },
+
         components: {
             SearchLocation
         }

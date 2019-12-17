@@ -1,37 +1,47 @@
 <template>
     <div class="weather-panel-info">
         <div class="panel-info">
-            <span class="weather-temperature">{{this.$store.getters.getCityTemperature | filterOutput}}<sup>°</sup></span>
+            <span class="weather-temperature">{{getCityTemperature | filterOutput}}<sup>°</sup></span>
             <div class="city-weather-info">
-                <span class="city">{{this.$store.getters.getCityWeather}}</span>
+                <span class="city">{{getCityWeather}}</span>
                 <span class=weather-description>
-                    <span class="short-date">22.45</span> 
-                    <span class="name-day"> - Saturday,</span>
-                    <span class="full-date">7 Dec 19</span>
+                    <span class="short-date">{{getCurrentTimeCity}}</span> 
+                    <span class="name-day"> | </span>
+                    <!-- <span class="name-day"> - Saturday,</span> -->
+                    <span class="full-date">{{getCurrentDateCity}}</span>
                 </span>
             </div>
             <div class="type-weather">
                 <span class="weather-icon">
-                    <img :src=this.$store.getters.getIconWeather alt='icon'>
+                    <img :src=getIconWeather alt='icon'>
                 </span>
-                <span class="weather-type">{{this.$store.getters.getTypeTemperature}}</span>
+                <span class="weather-type">{{getTypeTemperature}}</span>
             </div>
         </div>
     </div>
 </template>
 <script>
+    import { mapGetters } from 'vuex';
+
     export default {
-        data() {
-            return {
-                
-            }
-        },
         filters: {
             filterOutput(value) {
                 return parseFloat(value).toFixed(0);
             }
+        },
+
+        computed: {
+            ...mapGetters([
+                "getCityTemperature",
+                "getCityWeather",
+                "getIconWeather",
+                "getTypeTemperature",
+                "getCurrentTimeCity",
+                "getCurrentDateCity"
+            ])
         }
     }
+
 </script>
 <style lang="scss">
 

@@ -4,6 +4,9 @@
     </div>
 </template>
 <script>
+
+import { mapMutations, mapActions } from "vuex";
+
 export default {
     data() {
         return {
@@ -11,9 +14,13 @@ export default {
         }
     },
     methods: {
+        ...mapMutations(["setCityName"]),
+        ...mapActions(["getWeatherInfo"]),
+
         inputCity() {
-            this.$store.commit('setCityName', this.cityName);
-            this.$store.dispatch("getWeatherInfo");
+            this.setCityName(this.cityName);
+            this.getWeatherInfo();
+            
         }
     }
 }
