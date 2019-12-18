@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 const weahherApiKey = 'fa86230905bf0a50a2962e22862e3038';
 const timeZoneApiKey = 'SZWDLDDGQE1J';
+const cityAutocompleteKey = '7c756203dbb38590a66e01a5a3e1ad96';
 const units = 'metric';
 
 export default new Vuex.Store({
@@ -49,7 +50,8 @@ export default new Vuex.Store({
 			state.currentDateCity = payload;
 		},
 
-  	},
+	},
+	
 
 	actions: {
 		getWeatherInfo(store) {
@@ -62,52 +64,75 @@ export default new Vuex.Store({
 			.catch(error => error);
 		},
 
-    weatherData(store, data) {
-    	store.commit('setWeatherObj', data);
-    	store.commit('setCityTemperature', data.main.temp);
-    	store.commit('setTypeWeather', data.weather[0].description);
-    	store.commit('setWeatherDetails', [
-        	{ key: 'Clouds', value: data.clouds.all + '%'},
-        	{ key: 'Humidity', value: data.main.humidity + '%' }, 
-        	{ key: 'Speed', value: data.wind.speed + 'km/h'}
-      	]),
-      	store.commit('setIconWeather', data.weather[0].icon);
-		store.commit('setBgImageWeather', data.weather[0].description + '.jpg');
-		store.dispatch("timeLocation");
-    },
+		weatherData(store, data) {
+			store.commit('setWeatherObj', data);
+			store.commit('setCityTemperature', data.main.temp);
+			store.commit('setTypeWeather', data.weather[0].description);
+			store.commit('setWeatherDetails', [
+				{ key: 'Clouds', value: data.clouds.all + '%'},
+				{ key: 'Humidity', value: data.main.humidity + '%' }, 
+				{ key: 'Speed', value: data.wind.speed + 'km/h'}
+			]),
+			store.commit('setIconWeather', data.weather[0].icon);
+			store.commit('setBgImageWeather', data.weather[0].description + '.jpg');
+			store.dispatch("timeLocation");
+		},
 
-    findMe(store) {
-      	navigator.geolocation.getCurrentPosition(success);
-     	function success(pos) {
-        	const lat = pos.coords.latitude;
-        	const lon = pos.coords.longitude;
+		findMe(store) {
 
-			Vue.axios.get(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&APPID=${weahherApiKey}&units=${units}`)
-			.then(response => response.data)
-			.then(data => {
-				store.commit('setCityName', data.name);
-				store.dispatch("weatherData", data);
-				
+			navigator.geolocation.getCurrentPosition(success);
+			function success(pos) {
+				const lat = pos.coords.latitude;
+				const lon = pos.coords.longitude;
+
+				Vue.axios.get(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&APPID=${weahherApiKey}&units=${units}`)
+				.then(response => response.data)
+				.then(data => {
+					store.commit('setCityName', data.name);
+					store.dispatch("weatherData", data);
+				})
+				.catch(error => error); 
+			}
+		},
+
+		timeLocation(store) {
+			const lat = store.state.weatherObj.coord.lat;
+			const lon = store.state.weatherObj.coord.lon;
+
+			Vue.axios.get(`http://api.timezonedb.com/v2.1/get-time-zone?key=${timeZoneApiKey}&format=json&by=position&lat=${lat}&lng=${lon}`)
+				.then(response => response.data)
+				.then(data => {
+					const date = data.formatted.split(' ')[0];
+					const time = data.formatted.split(' ')[1];
+
+					store.commit('setCurrentDateCity', date);
+					store.commit('setCurrentTimeCity', time.slice(0, time.length - 3));
+				})
+			.catch(error => error);
+		},
+		
+		cityAutocomplete(store, input) {
+			// Vue.axios.get(`https://secure.geobytes.com/AutoCompleteCity?key=${cityAutocompleteKey}&callback=?&q=${input}`)
+			// 	.then(response => response.data)
+			// 	.then(data => {
+			// 		console.log(data);
+			// 	})
+			// 	.catch(error => error);
+			fetch("https://andruxnet-world-cities-v1.p.rapidapi.com/?query=paris&searchby=city", {
+				"method": "GET",
+				"headers": {
+					"x-rapidapi-host": "andruxnet-world-cities-v1.p.rapidapi.com",
+					"x-rapidapi-key": "1a9f4115b5msh3d09357b70d6de8p127123jsn29d4c08e660d"
+				}
 			})
-			.catch(error => error); 
-      	}
-    },
-
-    timeLocation(store) {
-      	const lat = store.state.weatherObj.coord.lat;
-      	const lon = store.state.weatherObj.coord.lon;
-
-     	 Vue.axios.get(`http://api.timezonedb.com/v2.1/get-time-zone?key=${timeZoneApiKey}&format=json&by=position&lat=${lat}&lng=${lon}`)
-			.then(response => response.data)
-			.then(data => {
-				const date = data.formatted.split(' ')[0];
-				const time = data.formatted.split(' ')[1];
-
-				store.commit('setCurrentDateCity', date);
-				store.commit('setCurrentTimeCity', time.slice(0, time.length - 3));
+			.then(response => {
+				console.log(response);
 			})
-      	.catch(error => error);
-    }
+			.catch(err => {
+				console.log(err);
+			});
+		}
+
   },
 
 
